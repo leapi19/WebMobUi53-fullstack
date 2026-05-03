@@ -10,6 +10,7 @@
 
   const { setPolls } = usePollStore();
   setPolls(props.polls);
+  console.log('polls reçus:', props.polls);
 </script>
 
 <template>
