@@ -49,7 +49,7 @@ export function useFetchApi(baseUrl = null, additionalHeaders = {}) {
     data = null,
     method = null,
     headers = {},
-    timeout = 5000,
+    timeout = 30000,
   }) {
     if (url == null || typeof url !== 'string') throw new Error('The URL must be a string.');
 
