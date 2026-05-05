@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { usePollStore } from '@/stores/usePollStore';
 
 const props = defineProps({
@@ -23,6 +23,29 @@ const options = ref(
 
 const error = ref(null);
 
+// Watch pour réinitialiser les champs quand le poll change
+watch(() => props.poll, (newPoll) => {
+  if (newPoll) {
+    title.value = newPoll.title ?? '';
+    question.value = newPoll.question ?? '';
+    isDraft.value = newPoll.is_draft ?? true;
+    allowMultiple.value = newPoll.allow_multiple_choices ?? false;
+    resultsPublic.value = newPoll.results_public ?? false;
+    duration.value = newPoll.duration ?? '';
+    options.value = newPoll.options?.map(o => ({ label: o.label })) ?? [{ label: '' }, { label: '' }];
+  } else {
+    // Réinitialiser pour un nouveau sondage
+    title.value = '';
+    question.value = '';
+    isDraft.value = true;
+    allowMultiple.value = false;
+    resultsPublic.value = false;
+    duration.value = '';
+    options.value = [{ label: '' }, { label: '' }];
+  }
+  error.value = null;
+}, { immediate: true });
+
 function addOption() {
   options.value.push({ label: '' });
 }
@@ -31,8 +54,37 @@ function removeOption(index) {
   if (options.value.length > 2) options.value.splice(index, 1);
 }
 
+function validateOptions() {
+  // Filtrer les options vides et convertir en minuscules pour comparaison insensible à la casse
+  const nonEmptyLabels = options.value
+    .map(o => o.label.trim().toLowerCase())
+    .filter(label => label !== '');
+
+  // Vérifier les doublons
+  const uniqueLabels = new Set(nonEmptyLabels);
+  if (uniqueLabels.size !== nonEmptyLabels.length) {
+    // Trouver les doublons pour le message d'erreur
+    const duplicates = nonEmptyLabels.filter((item, index) => nonEmptyLabels.indexOf(item) !== index);
+    const uniqueDuplicates = [...new Set(duplicates)];
+    return {
+      valid: false,
+      message: `Erreur : l'option "${uniqueDuplicates[0]}" apparaît plusieurs fois.`
+    };
+  }
+
+  return { valid: true };
+}
+
 async function submit() {
   error.value = null;
+
+  // Valider les options
+  const validation = validateOptions();
+  if (!validation.valid) {
+    error.value = validation.message;
+    return;
+  }
+
   const data = {
     title: title.value || null,
     question: question.value,

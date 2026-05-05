@@ -18,21 +18,30 @@ const error = ref(null);
 const selectedOptions = ref([]);
 const voteError = ref(null);
 const voteSuccess = ref(false);
+const hasVoted = ref(false);
+const isFetching = ref(false);
 
 async function fetchResults() {
+  if (isFetching.value) return;
+  isFetching.value = true;
   try {
     const data = await fetchApi({ url: `polls/${props.token}/results` });
     poll.value = data.poll;
     totalVotes.value = data.total_votes;
+    hasVoted.value = data.has_voted;
     loading.value = false;
   } catch (err) {
-    error.value = 'Sondage introuvable.';
-    loading.value = false;
+    if (!poll.value) {
+      error.value = 'Sondage introuvable.';
+      loading.value = false;
+    }
+  } finally {
+    isFetching.value = false;
   }
 }
 
 fetchResults();
-usePolling(fetchResults, 5000);
+usePolling(fetchResults, 10000);
 
 const isExpired = computed(() => {
   if (!poll.value?.ends_at) return false;
@@ -40,7 +49,7 @@ const isExpired = computed(() => {
 });
 
 const canVote = computed(() => {
-  return props.isAuthenticated && poll.value && !poll.value.is_draft && !isExpired.value;
+  return props.isAuthenticated && poll.value && !poll.value.is_draft && !isExpired.value && !hasVoted.value;
 });
 
 const canSeeResults = computed(() => {
@@ -68,6 +77,7 @@ async function submitVote() {
       data: { option_ids: selectedOptions.value },
     });
     voteSuccess.value = true;
+    hasVoted.value = true;
     await fetchResults();
   } catch (err) {
     voteError.value = err?.data?.message ?? 'Une erreur est survenue.';
@@ -89,19 +99,14 @@ function getPercentage(votesCount) {
       <h1 class="text-2xl font-bold dark:text-white mb-2">{{ poll.title || poll.question }}</h1>
       <p v-if="poll.title" class="text-gray-600 dark:text-gray-300 mb-6">{{ poll.question }}</p>
 
-      <!-- Sondage terminé -->
-      <div v-if="isExpired"
-        class="mb-4 p-3 bg-red-100 text-red-700 rounded font-semibold">
+      <div v-if="isExpired" class="mb-4 p-3 bg-red-100 text-red-700 rounded font-semibold">
         {{ i18n.vote.closed }}
       </div>
 
-      <!-- Sondage brouillon -->
-      <div v-else-if="poll.is_draft"
-        class="mb-4 p-3 bg-yellow-100 text-yellow-700 rounded">
+      <div v-else-if="poll.is_draft" class="mb-4 p-3 bg-yellow-100 text-yellow-700 rounded">
         Ce sondage n'est pas encore ouvert.
       </div>
 
-      <!-- Formulaire de vote -->
       <div v-if="canVote && !voteSuccess" class="space-y-3 mb-6">
         <div v-for="option in poll.options" :key="option.id">
           <label class="flex items-center gap-3 cursor-pointer p-3 border rounded hover:bg-gray-50 dark:hover:bg-slate-700 dark:text-white">
@@ -132,19 +137,18 @@ function getPercentage(votesCount) {
         </button>
       </div>
 
-      <!-- Message vote envoyé -->
-      <div v-if="voteSuccess"
-        class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+      <div v-if="voteSuccess" class="mb-4 p-3 bg-green-100 text-green-700 rounded">
         Vote enregistré !
       </div>
 
-      <!-- Pas connecté -->
-      <div v-if="!isAuthenticated && !poll.results_public"
-        class="mb-4 p-3 bg-yellow-100 text-yellow-700 rounded">
+      <div v-if="hasVoted && !voteSuccess" class="mb-4 p-3 bg-blue-100 text-blue-700 rounded">
+        Vous avez déjà voté.
+      </div>
+
+      <div v-if="!isAuthenticated && !poll.results_public" class="mb-4 p-3 bg-yellow-100 text-yellow-700 rounded">
         Connectez-vous pour voter.
       </div>
 
-      <!-- Résultats -->
       <div v-if="canSeeResults" class="mt-6">
         <h2 class="text-lg font-semibold dark:text-white mb-3">{{ i18n.vote.results }}</h2>
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">

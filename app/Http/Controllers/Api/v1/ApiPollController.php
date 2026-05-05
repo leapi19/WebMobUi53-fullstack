@@ -163,6 +163,14 @@ public function vote(Request $request, string $token)
         }
     }
 
+    $existingVote = \App\Models\PollVote::where('poll_id', $poll->id)
+    ->where('user_id', $request->user()->id)
+    ->first();
+
+if ($existingVote && !$poll->allow_vote_change) {
+    return response()->json(['message' => 'Vous avez déjà voté.'], 403);
+}
+
     // Unicité : supprimer les votes existants uniquement si choix unique
 if (!$poll->allow_multiple_choices) {
     \App\Models\PollVote::where('poll_id', $poll->id)
@@ -191,9 +199,17 @@ public function results(string $token)
         return response()->json(['message' => 'Poll not found.'], 404);
     }
 
+    $hasVoted = false;
+    if (auth()->check()) {
+        $hasVoted = \App\Models\PollVote::where('poll_id', $poll->id)
+            ->where('user_id', auth()->id())
+            ->exists();
+    }
+
     return response()->json([
         'poll' => $poll,
         'total_votes' => $poll->votes()->count(),
+        'has_voted' => $hasVoted,
     ]);
 }
 }
