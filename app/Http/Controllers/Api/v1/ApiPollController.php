@@ -163,10 +163,12 @@ public function vote(Request $request, string $token)
         }
     }
 
-    // Unicité : supprimer les votes existants si choix unique
+    // Unicité : supprimer les votes existants uniquement si choix unique
+if (!$poll->allow_multiple_choices) {
     \App\Models\PollVote::where('poll_id', $poll->id)
         ->where('user_id', $request->user()->id)
         ->delete();
+}
 
     foreach ($validated['option_ids'] as $optId) {
         $vote = new \App\Models\PollVote();
