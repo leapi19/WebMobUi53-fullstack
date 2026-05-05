@@ -249,6 +249,7 @@ return [
         'share' => 'Partager',
         'yes' => 'Oui',
         'no' => 'Non',
+        'results' => 'Résultats',
     ],
     'form' => [
         'create_title' => 'Créer un sondage',
