@@ -34,16 +34,18 @@ function closeDateModal() {
   <table v-else class="w-full border-collapse text-left">
     <thead>
       <tr>
-        <th class="border px-3 py-2">{{ i18n.table.actions }}</th>
-        <th class="border px-3 py-2">{{ i18n.table.question }}</th>
-        <th class="border px-3 py-2">{{ i18n.table.draft }}</th>
-        <th class="hidden sm:table-cell border px-3 py-2">{{ i18n.table.started_at }}</th>
-        <th class="hidden sm:table-cell border px-3 py-2">{{ i18n.table.ends_at }}</th>
+        <th class="border px-2 py-2 bg-[#e7c6ff]">{{ i18n.table.actions }}</th>
+        <th class="hidden sm:table-cell border px-3 py-2 bg-[#e7c6ff]">ID</th>
+        <th class="hidden sm:table-cell border px-3 py-2 bg-[#e7c6ff]">{{ i18n.table.title || 'Titre' }}</th>
+        <th class="border px-3 py-2 bg-[#e7c6ff]">{{ i18n.table.question }}</th>
+        <th class="border px-3 py-2 bg-[#e7c6ff]">{{ i18n.table.draft }}</th>
+        <th class="hidden sm:table-cell border px-3 py-2 bg-[#e7c6ff]">{{ i18n.table.started_at }}</th>
+        <th class="hidden sm:table-cell border px-3 py-2 bg-[#e7c6ff]">{{ i18n.table.ends_at }}</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="poll in polls" :key="poll.id">
-        <td class="border px-3 py-2 flex gap-1 flex-wrap justify-center">
+        <td class="border px-2 py-2 flex gap-1 flex-wrap justify-start">
           <button @click="emit('edit', poll)" class="btn-edit" :disabled="!poll.is_draft">
             {{ i18n.table.edit }}
           </button>
@@ -57,9 +59,19 @@ function closeDateModal() {
             📅 {{ i18n.table.date ?? 'Date' }}
           </button>
         </td>
-        <td class="border px-3 py-2 text-center">
-          <div class="font-bold">{{ poll.title || poll.question }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">{{ poll.title ? poll.question : '' }}</div>
+        <!-- Desktop: ID column (hidden on mobile) -->
+        <td class="hidden sm:table-cell border px-3 py-2 text-left font-mono text-sm">{{ poll.id }}</td>
+        <!-- Desktop: Title column (hidden on mobile) -->
+        <td class="hidden sm:table-cell border px-3 py-2 text-left">{{ poll.title || '-' }}</td>
+        <!-- Question column: Desktop shows only question, Mobile shows title + question -->
+        <td class="border px-3 py-2 text-left">
+          <!-- Mobile view: title and question together -->
+          <div class="sm:hidden">
+            <div v-if="poll.title" class="font-bold">{{ poll.title }}</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">{{ poll.question }}</div>
+          </div>
+          <!-- Desktop view: only question -->
+          <div class="hidden sm:block">{{ poll.question }}</div>
         </td>
         <td class="border px-3 py-2 text-center">{{ poll.is_draft ? i18n.table.yes : i18n.table.no }}</td>
         <td class="hidden sm:table-cell border px-3 py-2">{{ poll.started_at ? new Date(poll.started_at).toLocaleString('fr-CH') : '-' }}</td>

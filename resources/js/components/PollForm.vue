@@ -13,9 +13,9 @@ const { createPoll, updatePoll } = usePollStore();
 
 const title = ref(props.poll?.title ?? '');
 const question = ref(props.poll?.question ?? '');
-const isDraft = ref(props.poll?.is_draft ?? true);
-const allowMultiple = ref(props.poll?.allow_multiple_choices ?? false);
-const resultsPublic = ref(props.poll?.results_public ?? false);
+const isDraft = ref(Boolean(props.poll?.is_draft ?? true));
+const allowMultiple = ref(Boolean(props.poll?.allow_multiple_choices ?? false));
+const resultsPublic = ref(Boolean(props.poll?.results_public ?? false));
 const duration = ref(props.poll?.duration ?? '');
 const options = ref(
   props.poll?.options?.map(o => ({ label: o.label })) ?? [{ label: '' }, { label: '' }]
@@ -28,9 +28,9 @@ watch(() => props.poll, (newPoll) => {
   if (newPoll) {
     title.value = newPoll.title ?? '';
     question.value = newPoll.question ?? '';
-    isDraft.value = newPoll.is_draft ?? true;
-    allowMultiple.value = newPoll.allow_multiple_choices ?? false;
-    resultsPublic.value = newPoll.results_public ?? false;
+   isDraft.value = Boolean(newPoll.is_draft ?? true);
+    allowMultiple.value = Boolean(newPoll.allow_multiple_choices ?? false);
+    resultsPublic.value = Boolean(newPoll.results_public ?? false);
     duration.value = newPoll.duration ?? '';
     options.value = newPoll.options?.map(o => ({ label: o.label })) ?? [{ label: '' }, { label: '' }];
   } else {
