@@ -13,7 +13,7 @@ class ApiPollController extends Controller
      */
     public function index(Request $request)
     {
-        $polls = $request->user()->polls()->orderBy('created_at', 'desc')->get();
+        $polls = $request->user()->polls()->with('options')->orderBy('created_at', 'desc')->get();
 
         return $polls;
     }
@@ -97,6 +97,11 @@ public function update(Request $request, int $id)
     $poll = Poll::where('id', $id)->where('user_id', $request->user()->id)->first();
     if (!$poll) {
         return response()->json(['message' => 'Poll not found.'], 404);
+    }
+
+    // Prevent editing if poll is already published
+    if (!$poll->is_draft) {
+        return response()->json(['message' => 'Cannot modify a poll that has been launched.'], 403);
     }
 
     $validated = $request->validate([
