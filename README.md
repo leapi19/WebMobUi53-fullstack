@@ -18,11 +18,11 @@ Afin de lancer ce projet, une stack compatible avec Laravel, est requise.
 
 Voici les pré-requis nécessaires :
 
-- PHP >= 8.0.
-- Composer.
-- Node.js et npm.
-- Une base de données (MySQL, PostgreSQL, SQLite, etc.).
-- Un serveur web (Apache, Nginx, etc.).
+- PHP >= 8.2
+- Composer
+- Node.js et npm
+- Une base de données (MySQL, PostgreSQL, SQLite, etc.)
+- Un serveur web (Apache, Nginx, etc.)
 
 [Laravel Herd](https://helm.sh/docs/charts/laravel/) est recommandé pour une installation facile de Laravel et de ses dépendances.
 
@@ -75,3 +75,25 @@ Pour développer et tester le mini-projet en local, voici les étapes à suivre 
     ```
 
 L'application sera accessible à l'adresse <http://localhost:8000>.
+
+## 🧪 Comptes de test
+
+Après avoir exécuté `php artisan db:seed`, vous pouvez vous connecter avec les identifiants suivants :
+
+| Username | Email | Mot de passe |
+|----------|-------|------------|
+| `johndoe` | john.doe@example.com | `password` |
+| `janedoe` | jane.doe@example.com | `password` |
+
+## 🏗️ Choix techniques
+
+- **Backend** : Laravel 12 avec authentification SPA (Sanctum)
+- **Frontend** : Vue.js 3 (Composition API) avec Tailwind CSS
+- **Build** : Vite pour le bundling
+- **Base de données** : SQLite (développement), MySQL/PostgreSQL (production)
+- **Responsive** : Application mobile-friendly avec design adaptatif
+
+## 📚 Documentation supplémentaire
+
+- [README_FRONT.md](README_FRONT.md) - Architecture SPA Sanctum et intégration Vue.js détaillée
+

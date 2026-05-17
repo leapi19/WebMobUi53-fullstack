@@ -102,13 +102,13 @@ Le layout `default-layout.blade.php` expose un slot optionnel `scripts` dans le 
 Chaque page Blade qui embarque une app Vue y injecte son entrypoint Vite via ce slot :
 
 ```blade
-<x-default-layout>
+<x-vue-app-layout>
     <x-slot:scripts>
-        @vite(['resources/js/poll-dashboard-integrated.js'])
+        @vite(['resources/js/poll-dashboard.js'])
     </x-slot>
 
     <div id="app"></div>
-</x-default-layout>
+</x-vue-app-layout>
 ```
 
 Ainsi chaque page charge uniquement son propre bundle JS — pas de JS chargé globalement pour toutes les pages.
@@ -149,7 +149,7 @@ laravel({
     input: [
         'resources/css/app.css',
         'resources/js/poll-dashboard.js',
-        'resources/js/poll-dashboard-integrated.js',
+        'resources/js/poll-vote.js',
     ],
 }),
 ```
@@ -161,6 +161,69 @@ Chaque entrypoint Vue importe `bootstrap.js` avant le montage de l'app :
 ```js
 import './bootstrap';
 import { createApp } from 'vue';
-import App from './AppPollDashboardIntegrated.vue';
+import App from './AppPollDashboard.vue';
 createApp(App).mount('#app');
 ```
+
+---
+
+## Système de sondages — Documentation étudiant
+
+### Structure des fichiers ajoutés
+resources/js/
+├── poll-dashboard.js         # Entrypoint app dashboard
+├── poll-vote.js              # Entrypoint app page de vote
+├── AppPollDashboard.vue      # Composant racine dashboard
+├── AppPollVote.vue           # Composant racine page de vote
+├── components/
+│   ├── PollTable.vue         # Tableau des sondages
+│   ├── PollForm.vue          # Formulaire création/édition
+│   └── PollDateModal.vue     # Modal dates (mobile)
+├── composables/
+│   └── usePolling.js         # Polling régulier
+└── stores/
+└── usePollStore.js           # Store centralisé des sondages
+
+### Store centralisé
+
+`usePollStore` centralise toutes les données et opérations sur les sondages.
+La variable `polls` est déclarée hors de la fonction → singleton partagé entre
+tous les composants.
+
+```js
+const polls = ref([]); // partagé par tous les composants
+
+export function usePollStore() {
+  // create, update, delete...
+}
+```
+
+### Routes API ajoutées
+
+| Méthode | URL | Auth | Description |
+|---------|-----|------|-------------|
+| GET | /api/v1/polls | ✅ | Liste des sondages de l'utilisateur |
+| POST | /api/v1/polls | ✅ | Créer un sondage |
+| PUT | /api/v1/polls/{id} | ✅ | Modifier un sondage (brouillon uniquement) |
+| DELETE | /api/v1/polls/{id} | ✅ | Supprimer un sondage |
+| GET | /api/v1/polls/{token} | ❌ | Détail d'un sondage par token |
+| GET | /api/v1/polls/{token}/results | ❌ | Résultats avec `has_voted` |
+| POST | /api/v1/polls/{token}/vote | ✅ | Voter |
+
+### Pages ajoutées
+
+- `/polls/dashboard` → tableau de bord (authentifié)
+- `/poll/{token}` → page de vote (publique ou authentifiée)
+
+### Fonctionnalités implémentées
+
+- Création, modification, suppression de sondages
+- Paramètres : brouillon, choix multiple, résultats publics, durée
+- Modification uniquement possible sur les sondages en brouillon
+- Lien de partage via token
+- Vote avec choix simple (radio) ou multiple (checkbox)
+- Résultats en temps réel via polling toutes les 10 secondes
+- Graphique des résultats (barres de progression)
+- Accès anonyme aux résultats si publics
+- Message clair si sondage terminé ou en brouillon
+- Interface responsive (mobile first)
