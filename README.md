@@ -76,7 +76,7 @@ Pour développer et tester le mini-projet en local, voici les étapes à suivre 
 
 L'application sera accessible à l'adresse <http://localhost:8000>.
 
-## 🧪 Comptes de test
+## Comptes de test
 
 Après avoir exécuté `php artisan db:seed`, vous pouvez vous connecter avec les identifiants suivants :
 
@@ -85,7 +85,7 @@ Après avoir exécuté `php artisan db:seed`, vous pouvez vous connecter avec le
 | `johndoe` | john.doe@example.com | `password` |
 | `janedoe` | jane.doe@example.com | `password` |
 
-## 🏗️ Choix techniques
+## Choix techniques
 
 - **Backend** : Laravel 12 avec authentification SPA (Sanctum)
 - **Frontend** : Vue.js 3 (Composition API) avec Tailwind CSS
@@ -93,7 +93,11 @@ Après avoir exécuté `php artisan db:seed`, vous pouvez vous connecter avec le
 - **Base de données** : SQLite (développement), MySQL/PostgreSQL (production)
 - **Responsive** : Application mobile-friendly avec design adaptatif
 
-## 📚 Documentation supplémentaire
+L'application est volontairement découpée en peu de composants pour rester simple et lisible.
+Les deux composants principaux (`AppPollDashboard` et `AppPollVote`) orchestrent la logique, tandis que `PollTable`, `PollForm` et `PollDateModal` isolent les parties réutilisables.
+Toute la logique métier est centralisée dans le store et les composables.
+
+## Documentation supplémentaire
 
 - [README_FRONT.md](README_FRONT.md) - Architecture SPA Sanctum et intégration Vue.js détaillée
 
