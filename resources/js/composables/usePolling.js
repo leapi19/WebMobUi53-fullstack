@@ -9,7 +9,7 @@ import { onMounted, onUnmounted } from 'vue';
 export function usePolling(fn, interval = 5000) {
   let timer;
 
-  onMounted(() => {
+  onMounted(() => { //17 hook, éviter requêtes inutiles (réveil)
     timer = setInterval(fn, interval);
   });
 

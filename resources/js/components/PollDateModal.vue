@@ -5,6 +5,7 @@ const props = defineProps({
   i18n: { type: Object, default: () => ({}) },
 });
 
+// enfant emet event
 const emit = defineEmits(['close']);
 
 function formatDate(date) {

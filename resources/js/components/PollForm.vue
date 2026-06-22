@@ -23,6 +23,7 @@ const options = ref(
 
 const error = ref(null);
 
+
 // Watch pour réinitialiser les champs quand le poll change
 watch(() => props.poll, (newPoll) => {
   if (newPoll) {
@@ -75,6 +76,7 @@ function validateOptions() {
   return { valid: true };
 }
 
+// collecte refs et délègue au store
 async function submit() {
   error.value = null;
 
@@ -101,7 +103,7 @@ async function submit() {
     } else {
       await createPoll(data);
     }
-    emit('saved');
+    emit('saved'); //fermer formulaire
   } catch (err) {
     console.log('erreur:', err);
     error.value = err?.data?.message ?? props.i18n?.form?.errors?.default ?? 'Une erreur est survenue.';

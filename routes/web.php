@@ -31,6 +31,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/auth/login', 'login');
 });
 
+// connecté
 Route::middleware('auth')->group(function () {
     Route::get('/polls/dashboard', PollDashboardController::class)->name('polls.dashboard');
     Route::resource('posts', PostController::class)->except(['index', 'show']);
@@ -40,4 +41,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 });
 
+// publique - token pour sondage
 Route::get('/poll/{token}', App\Http\Controllers\PollVoteController::class)->name('poll.vote');

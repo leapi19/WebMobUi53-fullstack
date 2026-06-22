@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { useFetchApi } from '@/composables/useFetchApi';
 
-const polls = ref([]);
+const polls = ref([]); // singleton, ref -> màj auto
 
 export function usePollStore() {
   const { fetchApi } = useFetchApi();
@@ -9,12 +9,13 @@ export function usePollStore() {
   function setPolls(data) {
     polls.value = data;
   }
-
+//règles métier
   async function deletePoll(id) {
     polls.value = polls.value.filter(p => p.id != id);
     fetchApi({ url: 'polls/' + id, method: 'DELETE' });
   }
 
+  // post, unshift -> màj auto
   async function createPoll(data) {
     const newPoll = await fetchApi({ url: 'polls', method: 'POST', data });
     polls.value.unshift(newPoll);

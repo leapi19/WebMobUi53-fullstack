@@ -22,7 +22,7 @@ function openDateModal(poll) {
   selectedPoll.value = poll;
   showDateModal.value = true;
 }
-
+// parent écoute et ferme
 function closeDateModal() {
   showDateModal.value = false;
   selectedPoll.value = null;
@@ -56,7 +56,7 @@ function closeDateModal() {
             {{ i18n.table.share }}
           </button>
           <button @click="openDateModal(poll)" class="btn-date sm:hidden">
-            📅 {{ i18n.table.date ?? 'Date' }}
+            📅 {{ i18n.table.date ?? 'Date' }}  <!-- 13 modal Date -->
           </button>
         </td>
         <!-- Desktop: ID column (hidden on mobile) -->

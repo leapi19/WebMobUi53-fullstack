@@ -49,7 +49,7 @@ class ApiPollController extends Controller
 
         return response()->json(['message' => 'success'], 200);
     }
-
+// 12
     public function store(Request $request)
 {
     $validated = $request->validate([
@@ -71,7 +71,7 @@ class ApiPollController extends Controller
     $poll->allow_multiple_choices = $validated['allow_multiple_choices'] ?? false;
     $poll->results_public = $validated['results_public'] ?? false;
     $poll->duration = $validated['duration'] ?? null;
-    $poll->secret_token = \Illuminate\Support\Str::random(32);
+    $poll->secret_token = \Illuminate\Support\Str::random(32); //token lien de partage
 
     if (!$poll->is_draft) {
         $poll->started_at = now();
@@ -86,10 +86,10 @@ class ApiPollController extends Controller
         $option = new \App\Models\PollOption();
         $option->poll_id = $poll->id;
         $option->label = $opt['label'];
-        $option->save();
+        $option->save(); // sauvegarde
     }
 
-    return response()->json($poll->load('options'), 201);
+    return response()->json($poll->load('options'), 201); // rep JSON
 }
 
 public function update(Request $request, int $id)
@@ -142,6 +142,7 @@ public function update(Request $request, int $id)
     return response()->json($poll->load('options'));
 }
 
+//19
 public function vote(Request $request, string $token)
 {
     $poll = Poll::with('options')->where('secret_token', $token)->first();
@@ -167,7 +168,7 @@ public function vote(Request $request, string $token)
             return response()->json(['message' => 'Invalid option.'], 422);
         }
     }
-
+// verifie si existe
     $existingVote = \App\Models\PollVote::where('poll_id', $poll->id)
     ->where('user_id', $request->user()->id)
     ->first();
@@ -194,12 +195,13 @@ if (!$poll->allow_multiple_choices) {
     return response()->json(['message' => 'Vote recorded.'], 201);
 }
 
+//polling, résultats en temps réel
 public function results(string $token)
 {
     $poll = Poll::with(['options' => function ($query) {
         $query->withCount('votes');
     }])->where('secret_token', $token)->first();
-
+// charge sondage, trouve le bon, compte vote
     if (!$poll) {
         return response()->json(['message' => 'Poll not found.'], 404);
     }

@@ -2,5 +2,5 @@ import './bootstrap';
 import { createApp } from 'vue';
 import App from './AppPollDashboard.vue';
 const el = document.getElementById('app');
-const props = JSON.parse(el.dataset.props ?? '{}');
+const props = JSON.parse(el.dataset.props ?? '{}'); // props au composant racine
 createApp(App, props).mount(el);

@@ -11,12 +11,15 @@ const props = defineProps({
   i18n: { type: Object, default: () => ({}) },
 });
 
+// plusieurs composants mêmes données
 const { setPolls } = usePollStore();
 setPolls(props.polls);
 
+//7
 const showForm = ref(false);
 const pollToEdit = ref(null);
 
+// balance PollForm PollTable
 function openCreate() {
   pollToEdit.value = null;
   showForm.value = true;
@@ -49,7 +52,7 @@ function onCancel() {
         {{ i18n.dashboard.create }}
       </button>
     </div>
-
+<!-- 7 v-if balance -->
     <PollForm
       v-if="showForm"
       :poll="pollToEdit"

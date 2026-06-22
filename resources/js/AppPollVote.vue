@@ -19,8 +19,9 @@ const selectedOptions = ref([]);
 const voteError = ref(null);
 const voteSuccess = ref(false);
 const hasVoted = ref(false);
-const isFetching = ref(false);
+const isFetching = ref(false); // éviter que les requêtes s'empilent
 
+// recup sondage via api
 async function fetchResults() {
   if (isFetching.value) return;
   isFetching.value = true;
@@ -41,8 +42,9 @@ async function fetchResults() {
 }
 
 fetchResults();
-usePolling(fetchResults, 10000);
+usePolling(fetchResults, 10000); //appelle chaque 10sec màj
 
+//18 recalcule auto quand ca change
 const isExpired = computed(() => {
   if (!poll.value?.ends_at) return false;
   return new Date(poll.value.ends_at) < new Date();
@@ -77,7 +79,7 @@ async function submitVote() {
       data: { option_ids: selectedOptions.value },
     });
     voteSuccess.value = true;
-    hasVoted.value = true;
+    hasVoted.value = true; // on a voté
     await fetchResults();
   } catch (err) {
     voteError.value = err?.data?.message ?? 'Une erreur est survenue.';
@@ -88,6 +90,7 @@ function getPercentage(votesCount) {
   if (totalVotes.value === 0) return 0;
   return Math.round((votesCount / totalVotes.value) * 100);
 }
+
 </script>
 
 <template>

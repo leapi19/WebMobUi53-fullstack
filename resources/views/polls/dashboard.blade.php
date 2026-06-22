@@ -5,5 +5,5 @@
     <x-slot:title>
         Sondages
     </x-slot>
-    <div id="app" data-props="{{ $props }}"></div>
+    <div id="app" data-props="{{ $props }}"></div> <!-- JSON props -->
 </x-vue-app-layout>
